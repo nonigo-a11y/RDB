@@ -1,0 +1,504 @@
+<!doctype html><html lang="he"><head><title>RDB</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>RDB</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@500;700;800&family=Open+Sans:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#FBF6EE;--card:#FFFFFF;--ink:#26302B;--mute:#4A5650;--line:#E7E1D6;--line2:#EFE9DD;--green:#2F7D5B;--green-t:#E4F1EA;--green-b:#BFDCCB;--green-d:#1F5C42;--brick:#C9461F;--butter:#FFF4D6;--butter-b:#F2D58A;--butter-d:#6B4A00;--busy:#ECE7DC;--busy-b:#D9D2C3;color-scheme:light}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:'Open Sans',system-ui,sans-serif;font-size:16px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+#app{min-height:100%;padding-bottom:84px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.brand{font-family:'Heebo',sans-serif;font-weight:800;font-size:24px;color:var(--green)}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+.btn{min-height:44px;padding:0 16px;border-radius:12px;border:1.5px solid #CFC7B8;background:var(--card);font-weight:600}
+.btn.primary{background:var(--green);border-color:var(--green);color:#FFFFFF;font-weight:700}
+.btn.accent{background:var(--brick);border-color:var(--brick);color:#FFFFFF;font-weight:700}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--mute)}
+.btn.danger{color:var(--brick);border-color:var(--brick)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.chip{min-height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:15px}
+.chip.on{background:var(--brick);border-color:var(--brick);color:#FFFFFF;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+h1,h2,h3{font-family:'Heebo',sans-serif;margin:0}
+h1{font-size:26px;font-weight:800} h2{font-size:19px;font-weight:700}
+.sub{margin:0;font-size:14px;color:var(--mute)}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sp{justify-content:space-between}
+.tabs{position:fixed;inset-inline:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);z-index:30}
+.tabs button{flex:1;min-height:58px;border:0;border-top:3px solid transparent;background:none;font-weight:600;color:var(--mute);font-size:15px}
+.tabs button.navadd{color:var(--brick);font-weight:800}
+.tabs button.on{color:var(--green);border-top-color:var(--green)}
+.inp{width:100%;min-height:44px;border:1.5px solid #CFC7B8;border-radius:12px;background:#FFFFFF;padding:8px 12px}
+textarea.inp{resize:vertical;line-height:1.5}
+label.f{display:block;margin:10px 0}
+label.f>span{display:block;font-size:13px;color:var(--mute);margin-bottom:4px}
+.calwrap{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;overflow-x:auto}
+#cal{min-width:780px;display:grid;grid-template-columns:48px repeat(7,minmax(0,1fr))}
+.dayh{height:44px;text-align:center;padding-top:2px;border:0;background:none;width:100%;border-radius:10px}
+.blk{position:absolute;cursor:grab;touch-action:pan-x pan-y;-webkit-touch-callout:none;user-select:none}
+.blk:focus-visible{outline:3px solid #F2B84B}
+.planwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+
+.trows{display:flex;flex-direction:column;gap:4px;max-height:340px;overflow-y:auto;padding-inline-end:2px}.tchip.trow{border-radius:10px;min-height:38px;width:100%;box-sizing:border-box;justify-content:space-between;padding:0 12px;font-size:15px}.tchip.trow small{font-weight:400;color:var(--mute);margin-inline-start:auto}
+.tchip{display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:0 14px;border-radius:999px;border:1px solid var(--green-b);background:var(--green-t);color:var(--green-d);font-weight:600;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.tchip small{font-weight:400;font-size:12px;color:var(--mute)}
+.tchip.meal{background:var(--butter);border-color:var(--butter-b);color:var(--butter-d)}
+.dragghost{position:fixed;z-index:80;pointer-events:none;opacity:.92;box-shadow:0 8px 20px rgba(38,48,43,.25)}
+.col.hot{outline:2px dashed var(--green);outline-offset:-2px;border-radius:8px}
+.empty{text-align:center;color:var(--mute);padding:28px 8px}
+.pill{font-size:12px;border-radius:999px;padding:1px 9px;background:#F3EEE3;color:var(--mute)}
+.pill.g{background:var(--green-t);color:var(--green-d)} .pill.y{background:var(--butter);color:var(--butter-d)}
+.list>*{border-top:1px solid var(--line2)} .list>*:first-child{border-top:0}
+.ck{width:24px;height:24px;border:2px solid var(--green);border-radius:7px;background:#FFFFFF;flex:none;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.ck.on{background:var(--green)}
+.item{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 0}
+.item.done .t{text-decoration:line-through;opacity:.5}
+.ov{position:fixed;inset:0;background:rgba(38,48,43,.45);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.ov.show{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:620px;max-height:92vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px))}
+@media(min-width:700px){.ov{align-items:center}.sheet{border-radius:20px}}
+.toast{position:fixed;inset-inline:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:420px;background:var(--ink);color:#FFFFFF;border-radius:12px;padding:10px 14px;z-index:60;display:none;text-align:center}
+.toast.show{display:block}
+.heart{border:0;background:none;font-size:26px;line-height:1;min-width:44px;min-height:44px;color:var(--brick)}
+.daypick{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #F2B84B;outline-offset:2px}
+</style>
+<div id="app" dir="rtl" lang="he">
+<header class="top"><div class="brand">RDB</div>
+</header>
+<main id="view" class="wrap wide"></main>
+<nav class="tabs" aria-label="ניווט">
+<button data-act="tab" data-v="plan">יומן</button><button data-act="tab" data-v="lib">מתכונים</button><button data-act="tab" data-v="shop">קניות</button><button data-act="settings">פרופיל</button><button class="navadd" data-act="addRecipe">+ מתכון</button>
+</nav>
+<div class="ov" id="ov"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast" role="status"></div>
+</div>
+<script>
+(function(){
+var KEY='rdb.v1';
+var S={recipes:[],plan:[],usual:[],manual:[],musts:[],checks:{},off:{},cfg:{ws:1020,we:1260}};
+var ui={tab:'plan',week:0,q:'',tf:0,draft:null,pending:null};
+var DN=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+var MON=['בינואר','בפברואר','במרץ','באפריל','במאי','ביוני','ביולי','באוגוסט','בספטמבר','באוקטובר','בנובמבר','בדצמבר'];
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);for(var k in o)S[k]=o[k]}}catch(e){ui.nostore=true}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){ui.nostore=true}}
+function p2(n){return (n<10?'0':'')+n}
+function iso(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())}
+function fromIso(s){var a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2])}
+function wstart(off){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-d.getDay()+off*7);return d}
+function weekDates(off){var s=wstart(off),r=[];for(var i=0;i<7;i++){var d=new Date(s);d.setDate(s.getDate()+i);r.push(d)}return r}
+function weekLabel(off){var w=weekDates(off),a=w[0],b=w[6];return a.getMonth()===b.getMonth()?a.getDate()+'–'+b.getDate()+' '+MON[b.getMonth()]:a.getDate()+' '+MON[a.getMonth()]+' – '+b.getDate()+' '+MON[b.getMonth()]}
+function hm(m){return p2(Math.floor(m/60))+':'+p2(m%60)}
+function phm(s){var a=(s||'0:0').split(':');return (+a[0])*60+(+a[1]||0)}
+function toast(t){var el=$('toast');el.textContent=t;el.className='toast show';clearTimeout(toast.t);toast.t=setTimeout(function(){el.className='toast'},2600)}
+function rec(id){return S.recipes.filter(function(r){return r.id===id})[0]}
+
+/* ---------- parsing ---------- */
+var UN={'גרם':'g','גר':'g',"גר'":'g','ג׳':'g','קג':'kg','ק״ג':'kg','ק"ג':'kg','קילו':'kg','קילוגרם':'kg','מל':'ml','מ״ל':'ml','מ"ל':'ml','ליטר':'l','כוס':'cup','כוסות':'cup','כף':'tbsp','כפות':'tbsp','כפית':'tsp','כפיות':'tsp','שן':'clove','שיני':'clove','שיניים':'clove','חבילה':'pack','חבילות':'pack','קופסה':'can','קופסת':'can','קופסאות':'can','פרוסה':'slice','פרוסות':'slice','חופן':'handful','יחידה':'unit','יחידות':'unit',"יח'":'unit','יח׳':'unit'};
+var UL={g:['גרם','גרם'],kg:['ק״ג','ק״ג'],ml:['מ״ל','מ״ל'],l:['ליטר','ליטר'],cup:['כוס','כוסות'],tbsp:['כף','כפות'],tsp:['כפית','כפיות'],clove:['שן','שיני'],pack:['חבילה','חבילות'],can:['קופסה','קופסאות'],slice:['פרוסה','פרוסות'],handful:['חופן','חופנים'],unit:['','']};
+var UNRE=Object.keys(UN).sort(function(a,b){return b.length-a.length}).map(function(k){return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('|');
+var NUM='(\\d+\\s+\\d+\\/\\d+|\\d+\\/\\d+|\\d+(?:[.,]\\d+)?|[½¼¾⅓⅔]|חצי|רבע)';
+function num(s){s=s.trim();var f={'½':.5,'¼':.25,'¾':.75,'⅓':.33,'⅔':.67,'חצי':.5,'רבע':.25};if(f[s]!=null)return f[s];
+ var m=s.match(/^(\d+)\s+(\d+)\/(\d+)$/);if(m)return +m[1]+(+m[2])/(+m[3]);m=s.match(/^(\d+)\/(\d+)$/);if(m)return (+m[1])/(+m[2]);return parseFloat(s.replace(',','.'))}
+function parseIng(line){
+ var raw=line.trim(),s=raw;
+ var a=new RegExp('^'+NUM+'(?:\\s*-\\s*\\d+(?:[.,]\\d+)?)?\\s*(?:('+UNRE+')(?=\\s|$))?\\s*(?:של\\s+)?(.+)$').exec(s);
+ if(a&&a[3]&&!/^\d/.test(a[3])){var u=a[2]?UN[a[2]]:'unit';return{raw:raw,qty:num(a[1]),unit:u,name:a[3].trim()}}
+ var b=new RegExp('^(.+?)\\s*[-–:]\\s*'+NUM+'\\s*(?:('+UNRE+')(?=\\s|$))?\\s*$').exec(s);
+ if(b){return{raw:raw,qty:num(b[2]),unit:b[3]?UN[b[3]]:'unit',name:b[1].trim()}}
+ return{raw:raw,qty:null,unit:'',name:raw}}
+function clean(l){return l.replace(/[‎‏]/g,'').replace(/\p{Extended_Pictographic}️?/gu,'').replace(/^[\s\-–—*•·●○▪▫✔✅]+/,'').trim()}
+function durs(l){var o=[],m,re;
+ if(/שעה וחצי/.test(l))o.push(90);else if(/שעתיים/.test(l))o.push(120);else if(/חצי שעה/.test(l))o.push(30);else if(/רבע שעה/.test(l))o.push(15);
+ re=/(\d+(?:[.,]\d+)?)(?:\s*[-–]\s*(\d+(?:[.,]\d+)?))?\s*(דקות|דקה|דק׳|דק'|דק|שעות|שעה|שע׳|שע')(?!\S*\s*של)/g;
+ while((m=re.exec(l))){var v=Math.max(parseFloat(m[1].replace(',','.')),m[2]?parseFloat(m[2].replace(',','.')):0);if(/^ש/.test(m[3]))v*=60;o.push(Math.round(v))}
+ return o}
+var PASSRE=/אפייה|אפיה|אופים|בתנור|מבשלים|בישול|תפיחה|תופח|מצננים|קירור|מקפיאים|הקפאה|מרתיחים|מנוחה|להמתין|המתנה|מבשל|מאדים|אידוי/;
+function parseRecipe(raw){
+ var lines=raw.replace(/\r/g,'').split('\n').map(clean).filter(function(l){return l&&!/^(#\S+\s*)+$/.test(l)});
+ var ING=/^(מצרכים|מרכיבים|חומרים|רכיבים|ingredients)\s*:?\s*$/i,STP=/^(אופן ההכנה|אופן הכנה|הוראות הכנה|הוראות|שיטת הכנה|הכנה|שלבי הכנה|instructions|directions|method)\s*:?\s*$/i;
+ var tm={prep:null,pass:null,total:null,inf:0},out={title:'',servings:4,prep:20,pass:0,ings:[],steps:[]},mode=null,hasSec=lines.some(function(l){return ING.test(l)||STP.test(l)}),rest=[];
+ lines.forEach(function(l){
+  var m;
+  if(ING.test(l)){mode='ing';return} if(STP.test(l)){mode='stp';return}
+  if(l.length<45&&(m=/(?:מנות|סועדים|למנות|מספר מנות)\s*:?\s*(\d+)/.exec(l)||/(\d+)\s*(?:מנות|סועדים)/.exec(l))){out.servings=+m[1];return}
+  var dl=durs(l);
+  if(dl.length&&mode!=='stp'&&mode!=='ing'&&l.length<90){
+   var lab=false,seg=l.split(/[|•·;]|\s{2,}|\s+(?=(?:זמן\s)?(?:הכנה|עבודה|אפייה|אפיה|בישול|כולל|סה"כ))/);
+   seg.forEach(function(sg){var d2=durs(sg);if(!d2.length)return;var v=d2[0];
+    if(/(כולל|סה"כ|סך הכל)/.test(sg)){tm.total=v;lab=true}
+    else if(/(הכנה|עבודה)/.test(sg)&&!/אופן|הוראות/.test(sg)){tm.prep=v;lab=true}
+    else if(PASSRE.test(sg)){tm.pass=Math.max(tm.pass||0,v);lab=true}});
+   if(lab)return}
+  if(!out.title){out.title=l.replace(/:$/,'').slice(0,80);return}
+  if(hasSec){(mode==='stp'?out.steps:out.ings).push(l);return}
+  rest.push(l)});
+ if(!hasSec){rest.forEach(function(l){var g=parseIng(l);if(g.qty!=null&&l.length<60)out.ings.push(l);else if(l.length>28||/^\d+[.)]/.test(l))out.steps.push(l.replace(/^\d+[.)]\s*/,''));else out.ings.push(l)})}
+ out.steps=out.steps.map(function(s){return s.replace(/^\d+[.)]\s*/,'')});
+ var inf=0;out.steps.forEach(function(st){if(PASSRE.test(st)){var d3=durs(st);if(d3.length)inf+=Math.max.apply(null,d3)}});
+ out.est=false;
+ if(tm.pass!=null)out.pass=tm.pass;else if(inf){out.pass=Math.min(inf,480);out.est=true}
+ if(tm.prep!=null)out.prep=tm.prep;else if(tm.total!=null){out.prep=Math.max(5,tm.total-out.pass);out.est=true}else out.est=true;
+ return out}
+function fq(q){var w=Math.floor(q+.001),f=q-w,F={0:'',.25:'¼',.33:'⅓',.5:'½',.67:'⅔',.75:'¾'},best='',bd=.06;
+ Object.keys(F).forEach(function(k){if(Math.abs(f-k)<bd){bd=Math.abs(f-k);best=F[k]}});
+ if(best===''&&f>.08&&f<.92)return String(Math.round(q*10)/10); if(f>=.92)return String(w+1);
+ return (w?String(w):(best?'':'0'))+best}
+function fmtLine(name,u,q){var qs=fq(q),lab=UL[u]?(q>1.01?UL[u][1]:UL[u][0]):'';if((u==='g'||u==='ml')&&q>=500){var h=Math.round(q/500)/2,w=Math.floor(h),half=h-w>0,un=u==='g'?'קילו':'ליטר',t;
+  if(h<1)t='חצי '+un;else if(h===1)t=un;else if(w===1)t=un+' וחצי';else t=w+(half?' וחצי ':' ')+un;
+  return (t+' '+name).replace(/\s+/g,' ').trim()}return (qs+' '+lab+' '+name).replace(/\s+/g,' ').trim()}
+function norm(s){return s.toLowerCase().replace(/[^֐-׿a-z0-9 ]/g,'').replace(/\s+/g,' ').trim()}
+
+/* ---------- shopping units ---------- */
+var PR=[
+ ['garlic',/שום/,'שן שום','שיני שום','','',0],
+ ['sweetpot',/בטטה|בטטות/,'בטטה','בטטות','בינונית','בינוניות',250],
+ ['potato',/תפוח אדמה|תפוחי אדמה|תפו"א|תפוא|תפוחי-אדמה/,'תפוח אדמה','תפוחי אדמה','בינוני','בינוניים',170],
+ ['tom',/עגבני/,'עגבנייה','עגבניות','בינונית','בינוניות',120],
+ ['cuc',/מלפפון|מלפפונים/,'מלפפון','מלפפונים','בינוני','בינוניים',100],
+ ['onion',/^(?!.*ירוק).*בצל/,'בצל','בצלים','בינוני','בינוניים',150],
+ ['carrot',/גזר/,'גזר','גזרים','בינוני','בינוניים',80],
+ ['pepper',/^(?!.*מלח)(?!.*פלפל\s*(שחור|לבן|גרוס|אנגלי|חריף|קאיין|מיובש|טחון)).*פלפל/,'פלפל','פלפלים','בינוני','בינוניים',150],
+ ['zuc',/קישוא/,'קישוא','קישואים','בינוני','בינוניים',200],
+ ['egg',/חציל/,'חציל','חצילים','בינוני','בינוניים',300],
+ ['lemon',/לימון/,'לימון','לימונים','בינוני','בינוניים',100],
+ ['avo',/אבוקדו/,'אבוקדו','אבוקדו','בינוני','בינוניים',200],
+ ['brocc',/ברוקולי/,'ראש ברוקולי','ראשי ברוקולי','בינוני','בינוניים',350],
+ ['caul',/כרובית/,'ראש כרובית','ראשי כרובית','בינוני','בינוניים',600],
+ ['wing',/כנף|כנפי|כנפיים/,'כנף עוף','כנפי עוף','','',90],
+ ['schn',/^(?!.*(פירור|לחם|ציפוי)).*שניצל/,'שניצל','שניצלים','','',120],
+ ['steak',/סטייק|סטייקים|אנטרקוט/,'סטייק','סטייקים','','',250],
+ ['sausage',/נקניקי/,'נקניקייה','נקניקיות','','',70],
+ ['salmon',/סלמון/,'פילה סלמון','פילה סלמון','','',180],
+ ['thigh',/ירך|ירכי|ירכיים/,'ירך עוף','ירכי עוף','','',180],
+ ['drum',/שוק עוף|שוקי עוף|שוקיים/,'שוק עוף','שוקי עוף','','',130],
+ ['breast',/חזה עוף|חזה הודו/,'חזה עוף','חזות עוף','','',300],
+ ['cottage',/קוטג/,'קוטג׳','קוטג׳','','',250],
+ ['yog',/יוגורט/,'יוגורט','יוגורטים','','',150],
+ ['cream',/שמנת/,'שמנת','שמנות','','',250],
+ ['butter',/^(?!.*בוטנים).*חמאה/,'חמאה','חמאות','','',200],
+ ['whitech',/גבינה לבנה|גבינת שמנת/,'גבינה לבנה','גבינות לבנות','','',250],
+ ['tuna',/טונה/,'קופסת טונה','קופסאות טונה','','',160],
+ ['eggs',/ביצ/,'ביצה','ביצים','','',55]
+];
+var PANTRY=/קמח|סוכר|מלח|פלפל|שמן|אבקת אפ|סודה|וניל|קקאו|אורז|פסטה|ספגטי|עדשים|קינואה|בורגול|קוסקוס|כמון|פפריקה|קינמון|כורכום|תבלין|דבש|חומץ|סויה|טחינה|חומוס יבש|שוקולד|שמרים|עמילן|פירורי לחם|קורנפלור|צימוקים/;
+var CHK=' (בדקו אם יש מספיק)';
+var NAMEONLY0=/^(?!.*(רוטב|מרק|סלט)).*(פסטה|ספגטי|פנה|פוזילי|מקרוני|פטוצ׳יני|פטוצ'יני|לזניה|לזנייה|אורז|קמח|סוכר|שמן(?!ת)|קוסקוס|בורגול|פתיתים|עדשים)/,MILK=/^(?!.*(קוקוס|אבקת|מרוכז|שקדים|סויה|שיבולת|שועל|אורז|חמוץ)).*(^|\s)חלב(\s|$)/;
+var BREADRE=/^(?!.*(פירור|קרוטון|טוסט)).*(^|\s)לחם(\s|$)/,CEREAL=/קורנפלקס|דגני בוקר|גרנולה|מוזלי/;
+var NAMEONLY={test:function(n){return NAMEONLY0.test(n)||MILK.test(n)||BREADRE.test(n)||CEREAL.test(n)}};
+function prodRule(name){for(var i=0;i<PR.length;i++)if(PR[i][1].test(name))return PR[i];return null}
+// returns {rule,count,fromW} or null when it cannot be counted in whole units
+function toCount(name,unit,q){var r=prodRule(name);if(!r)return null;var c;
+ if(r[0]==='garlic'){if(unit==='clove')c=q/10;else if(unit==='unit'&&/ראש|ראשי/.test(name))c=q;else if(unit==='unit')c=q/10;else return null;return{rule:r,count:c,fromW:false}}
+ if(unit==='slice')return null;
+ if(unit==='unit'||unit==='can'||unit==='pack')return{rule:r,count:q,fromW:false};
+ if(unit==='g'||unit==='ml')return{rule:r,count:q/r[6],fromW:true};
+ if(unit==='kg'||unit==='l')return{rule:r,count:q*1000/r[6],fromW:true};
+ return null}
+function prodText(rule,count,fromW){var n=Math.max(1,Math.ceil(count-0.001)),t;
+ if(rule[0]==='garlic')return n+(n===1?' ראש שום':' ראשי שום');
+ t=n+' '+(n===1?rule[2]:rule[3]);return t}
+
+/* ---------- derived ---------- */
+function derive(off){
+ var ds=weekDates(off).map(iso),map={};
+ S.plan.forEach(function(e){if(e.type!=='cook'||ds.indexOf(e.date)<0)return;var r=rec(e.recipeId);if(!r)return;
+  r.ings.forEach(function(g){var k,o,tc=null,u,q;
+   if(g.qty!=null&&NAMEONLY.test(g.name)){k='n|'+norm(g.name);o=map[k]||(map[k]={key:k,raw:true,nameOnly:true,text:g.name,date:e.date,from:[]});if(e.date<o.date)o.date=e.date;if(o.from.indexOf(r.title)<0)o.from.push(r.title);return}
+   if(g.qty!=null){u=g.unit;q=g.qty;tc=toCount(g.name,u,q)}
+   if(tc){k='p|'+tc.rule[0];o=map[k]||(map[k]={key:k,prod:tc.rule,count:0,fromW:false,date:e.date,from:[]});o.count+=tc.count;if(tc.fromW)o.fromW=true}
+   else if(g.qty==null){k='r|'+norm(g.raw);o=map[k]||(map[k]={key:k,raw:true,nameOnly:NAMEONLY.test(g.raw),text:g.raw,date:e.date,from:[]})}
+   else{if(u==='kg'){u='g';q*=1000}if(u==='l'){u='ml';q*=1000}
+    k=norm(g.name)+'|'+u;o=map[k]||(map[k]={key:k,name:g.name,unit:u,qty:0,date:e.date,from:[]});o.qty+=q}
+   if(e.date<o.date)o.date=e.date;if(o.from.indexOf(r.title)<0)o.from.push(r.title)})});
+ return Object.keys(map).map(function(k){var o=map[k];
+  if(o.prod)o.text=prodText(o.prod,o.count,o.fromW);
+  else{o.text=o.raw?o.text:fmtLine(o.name,o.unit,o.qty);if(!o.nameOnly&&PANTRY.test(o.raw?o.text:o.name))o.text+=CHK}
+  return o})}
+function starters(){var n0=Date.now(),k=0,mk=function(t,p,at,ings){return{id:uid(),title:t,servings:5,prep:p,pass:0,at:at,meal:true,ings:ings.map(parseIng),steps:[],kept:true,starter:true,created:n0-(k++)}};
+ return [
+  mk('ארוחת בוקר - קורנפלקס וחלב (רק לילדים)',5,420,['120 גרם קורנפלקס','600 מ״ל חלב']),
+  mk('ארוחת בוקר - מעדן',2,450,['3 מעדנים']),
+  mk('ארוחת בוקר - פיתה ביס עם חמאת בוטנים וריבה',10,480,['6 פיתות ביס','חמאת בוטנים','ריבה']),
+  mk('ארוחת ערב - להורים וילדים',20,1140,['5 ביצים',"1 קופסת קוטג'",'1 קופסת טונה','4 מלפפונים','3 עגבניות','1 פלפל אדום','חצי בצל','חצי לימון','שמן זית','10 פרוסות לחם'])]}
+function seed(){try{if(localStorage.getItem(KEY))return}catch(e){}S.recipes=starters();S.seedV=4}
+function migrate(){if(S.seedV>=4)return;S.recipes=S.recipes.filter(function(r){return!r.starter}).concat(starters());S.seedV=4;if(S.cfg&&S.cfg.ws===1020&&S.cfg.we===1260){}}
+function expire(){
+ var ws=iso(wstart(0)),cut=Date.now()-7*864e5;
+ S.recipes=S.recipes.filter(function(r){if(r.kept)return true;var used=S.plan.some(function(e){return e.recipeId===r.id&&e.date>=ws});return used||r.created>cut})}
+
+/* ---------- views ---------- */
+function weekNav(){return '<div class="row sp"><div class="row"><button class="btn sm" data-act="weekNext" aria-label="שבוע הבא">›</button><strong style="font-family:Heebo,sans-serif;min-width:150px;text-align:center">'+weekLabel(ui.week)+'</strong><button class="btn sm" data-act="weekPrev" aria-label="שבוע קודם">‹</button>'+(ui.week?'<button class="btn sm ghost" data-act="weekToday">השבוע</button>':'')+'</div></div>'}
+function mustsPanel(){
+ var ws=iso(wstart(ui.week)),list=S.musts.filter(function(m){return m.freq==='weekly'||m.week===ws});
+ var h='<div class="card"><div class="row sp"><h2>חשוב שיהיה השבוע</h2><button class="btn sm primary" data-act="addMust">+ הוספה</button></div><p class="sub" style="margin:4px 0 8px">מכניסים פעם אחת, וזה חוזר בכל שבוע. מסמנים כשיש. בלי לחץ.</p>';
+ if(!list.length)h+='<p class="sub" style="padding:8px 0">עוד אין כלום כאן. למשל: חלה לשבת, עוגה ליום הולדת.</p>';
+ else h+='<div class="list">'+list.map(function(m){var on=S.checks['m|'+ws+'|'+m.id],ds=weekDates(ui.week).map(iso),placed=S.plan.some(function(e){return e.mustId===m.id&&ds.indexOf(e.date)>-1});
+  return '<div class="item'+(on?' done':'')+'">'+ck(on,'chk','data-k="m|'+ws+'|'+m.id+'"')+'<button data-act="openMust" data-id="'+m.id+'" style="flex:1;min-width:0;text-align:start;border:0;background:none;padding:0;min-height:44px"><span class="t">'+esc(m.text)+'</span><div class="row" style="gap:6px;margin-top:2px">'+(m.freq==='weekly'?'<span class="pill">כל שבוע</span>':'<span class="pill">פעם אחת</span>')+(placed?'<span class="pill g">ביומן</span>':'')+(m.recipeId&&rec(m.recipeId)?'<span class="pill y">עם מתכון</span>':'')+'</div></button></div>'}).join('')+'</div>';
+ return h+'</div>'}
+function tray(){
+ var rest=S.recipes.filter(function(r){return !r.meal}),meals=S.recipes.filter(function(r){return r.meal}),
+ tv=S.cfg.tv||(rest.length>12?'list':'chips'),q=(ui.tq||'').trim().toLowerCase(),tk=ui.tkf||'';
+ var list=rest.filter(function(r){return(!q||r.title.toLowerCase().indexOf(q)>-1)&&(!tk||(tk==='kept'?r.kept:!r.kept))}).sort(function(a,b){return (b.kept?1:0)-(a.kept?1:0)||b.created-a.created});
+ var one=function(r,row){return '<span class="tchip'+(r.meal?' meal':'')+(row?' trow':'')+'" data-rid="'+r.id+'"><span>'+(r.kept?'♥ ':'')+esc(r.title)+'</span> <small>'+r.prep+' דק׳</small></span>'};
+ var hint=IS_TOUCH?'לחצי על פריט להוספה ליומן.':'גוררים ליום ולשעה ביומן, או לוחצים לבחירת כמה ימים.';
+ var c1='<div class="card" style="margin-top:14px"><div class="row sp"><h2>מה אוכלים קבוע</h2><button class="btn sm accent" data-act="addMeal">+ ארוחה קבועה</button></div><p class="sub" style="margin:4px 0 10px">'+hint+' הכמויות נכנסות לרשימת הקניות.</p>'+
+ '<div class="row" style="gap:8px">'+(meals.length?meals.map(function(r){return one(r,false)}).join(''):'<span class="sub">עוד אין ארוחות קבועות. אפשר להוסיף כאן ארוחה שחוזרת כל שבוע.</span>')+'</div></div>';
+ var fch=[['','הכול'],['kept','♥ שמורים'],['new','הוספתי השבוע']].map(function(t){return '<button class="chip'+(tk===t[0]?' on':'')+'" data-act="trayFilter" data-v="'+t[0]+'">'+t[1]+'</button>'}).join('');
+ var byNew=function(a,b){return b.created-a.created},fresh=rest.filter(function(r){return !r.kept}).sort(byNew),liked=rest.filter(function(r){return r.kept}).sort(byNew),
+ top6=fresh.concat(liked).slice(0,6),full=!!q||ui.tall;
+ var body=full?('<div class="row" style="margin-bottom:8px">'+fch+'<button class="chip'+(tv==='chips'?' on':'')+'" data-act="trayView" data-v="chips">כפתורים</button><button class="chip'+(tv==='list'?' on':'')+'" data-act="trayView" data-v="list">רשימה</button></div>'+
+  '<div class="'+(tv==='list'?'trows':'row')+'" style="'+(tv==='list'?'':'gap:8px')+'">'+(list.length?list.map(function(r){return one(r,tv==='list')}).join(''):'<span class="sub">'+(rest.length?'אין מתכון שמתאים.':'עוד אין מתכונים נוספים.')+'</span>')+'</div>'):
+  ('<div class="row" style="gap:8px">'+(top6.length?top6.map(function(r){return one(r,false)}).join(''):'<span class="sub">עוד אין מתכונים נוספים. מדביקים אחד ומתחילים.</span>')+'</div>');
+ var c2='<div class="card" style="margin-top:14px"><div class="row sp"><h2>מתכונים נוספים לשבוע</h2><div class="row"><button class="btn sm accent" data-act="addRecipe">+ מתכון</button><button class="btn sm" data-act="tab" data-v="lib">ניהול ועריכה</button></div></div>'+
+ '<p class="sub" style="margin:4px 0 10px">'+(full?'כל המתכונים שלי.':'הוספתם לאחרונה'+(fresh.length<6&&liked.length?', ובהמשך ה־♥ שלכם':'')+'.')+'</p>'+
+ '<div class="row" style="margin-bottom:10px"><input class="inp" id="tq" placeholder="חיפוש בכל המתכונים" value="'+esc(ui.tq||'')+'" style="flex:1 1 140px;min-height:40px">'+(rest.length>top6.length||full?'<button class="chip'+(ui.tall?' on':'')+'" data-act="trayAll">'+(ui.tall?'הצג פחות':'הצג הכול ('+rest.length+')')+'</button>':'')+'</div>'+body+'</div>';
+ return c1+c2}
+function viewPlan(){
+ var any=S.plan.some(function(e){return e.type==='cook'});
+ return '<div class="row sp" style="margin-bottom:6px"><h1>התכנון שלי</h1><div class="row"><button class="btn accent" data-act="addRecipe">+ הוספת מתכון</button><button class="btn" data-act="goShop">לרשימת הקניות</button><button class="btn" data-act="addBusy">+ אירוע</button></div></div>'+
+ '<p class="sub" style="margin-bottom:12px">'+(IS_TOUCH?'לחצי על בלוק כדי לערוך, ולחיצה ארוכה כדי להזיז.':'גוררים בלוק ליום או לשעה אחרים, או לוחצים עליו כדי לערוך.')+' בלי לחץ: אפשר להזיז, לדלג, או לסמן יום קליל, בלי בישול כבד (ארוחות רגילות עדיין אפשר).</p>'+
+ '<div style="margin-bottom:10px">'+weekNav()+'</div>'+(ui.placing?'<div class="card" style="margin-bottom:10px;background:var(--green-t);border-color:var(--green-b)"><div class="row sp"><strong>לוחצים על יום ושעה ביומן, וזה נכנס שם: '+esc(ui.placing.rid?rec(ui.placing.rid).title:'')+'</strong><button class="btn sm" data-act="cancelPlace">ביטול</button></div></div>':'')+
+ (any?'':'<div class="card" style="margin-bottom:12px;background:#FFFFFF"><strong>השבוע עוד ריק, וזה בסדר.</strong><p class="sub" style="margin:4px 0 0">כשבא לכם, מדביקים מתכון ומוסיפים אותו ליום שנוח. הרשימה תיבנה לבד.</p></div>')+
+ '<div class="planwrap"><div><div class="row" style="gap:8px 14px;font-size:13px;color:var(--mute);margin-bottom:8px"><span><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--busy);border:1px solid var(--busy-b);vertical-align:middle"></i> עסוק</span><span><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#CFE8DA;border:1px solid #9CCBB2;vertical-align:middle"></i> הכנה, אני עובדת</span><span><i style="display:inline-block;width:12px;height:12px;border-radius:3px;background:repeating-linear-gradient(45deg,#E4F1EA,#E4F1EA 3px,#FFFFFF 3px,#FFFFFF 6px);border:1px solid var(--green-b);vertical-align:middle"></i> תנור או סיר עובדים לבד</span></div>'+
+ '<div class="calwrap"><div id="cal"></div></div><p class="sub" style="margin-top:10px">הזמן הפנוי סופר רק את ההכנה. כשהתנור עובד לבד, זה לא נחשב כזמן בישול.</p>'+tray()+'</div>'+
+ '</div>'}
+function grid(){var gs=Math.min(6,Math.max(0,Math.floor(S.cfg.ws/60)-1)),ge=Math.max(22,Math.min(24,Math.ceil(S.cfg.we/60)+1));return{gs:gs,ge:ge,H:36}}
+function freeMin(date){var n=S.cfg.we-S.cfg.ws,m=[];for(var i=0;i<n;i++)m.push(0);
+ S.plan.forEach(function(e){if(e.date!==date)return;var a=e.start-S.cfg.ws,b=a+e.prep;for(var i=Math.max(0,a);i<Math.min(n,b);i++)m[i]=1});
+ return m.filter(function(x){return!x}).length}
+function overlaps(date){var b=[],c=[];S.plan.forEach(function(e){if(e.date!==date)return;(e.type==='busy'?b:c).push([e.start,e.start+e.prep])});
+ return c.some(function(x){return b.some(function(y){return x[0]<y[1]&&y[0]<x[1]})})}
+function blockHtml(e,g,ln,nl){
+ var top=(e.start/60-g.gs)*g.H,ph=Math.max(16,e.prep/60*g.H-2),qh=e.pass/60*g.H,busy=e.type==='busy';
+ var st=busy?'background:var(--busy);border:1px solid var(--busy-b);color:var(--mute)':'background:#CFE8DA;border:1px solid #9CCBB2;color:var(--green-d);font-weight:600';
+ var h='<div class="blk" tabindex="0" role="button" data-id="'+e.id+'" aria-label="'+esc(e.title)+'" style="top:'+top.toFixed(0)+'px;inset-inline-start:calc('+(ln*100/nl).toFixed(2)+'% + 2px);width:calc('+(100/nl).toFixed(2)+'% - 4px)"><div style="'+st+';border-radius:6px 6px '+(e.pass?'0 0':'6px 6px')+';padding:0 6px;font-size:11px;line-height:'+(ph-2)+'px;height:'+ph.toFixed(0)+'px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+esc(e.title.replace(/^ארוחת /,''))+(!busy&&e.pass?' · '+e.prep:'')+'</div>';
+ if(e.pass)h+='<div style="height:'+Math.max(14,qh-2).toFixed(0)+'px;border:1px solid var(--green-b);border-top:0;border-radius:0 0 8px 8px;background:repeating-linear-gradient(45deg,#E4F1EA,#E4F1EA 4px,#FFFFFF 4px,#FFFFFF 8px);color:var(--green-d);font-size:11px;padding:2px 7px;overflow:hidden">'+(e.pass>=30?'תנור/סיר '+e.pass+' דק׳<br>⏲ טיימר':'⏲ '+e.pass+' דק׳')+'</div>';
+ return h+'</div>'}
+function drawCal(){
+ var c=$('cal');if(!c)return;var g=grid(),dates=weekDates(ui.week),today=iso(new Date()),h='<div><div style="height:44px"></div>';
+ for(var x=g.gs;x<g.ge;x++)h+='<div style="height:'+g.H+'px;font-size:11px;color:var(--mute);text-align:end;padding-inline-end:6px;line-height:1;position:relative;top:-6px">'+x+':00</div>';
+ h+='</div>';
+ dates.forEach(function(d,i){var k=iso(d),off=S.off[k],note;
+  if(off)note='יום קליל, בלי בישול כבד';else if(overlaps(k))note='קצת צפוף, אפשר להזיז';else if(S.plan.some(function(e){return e.date===k&&e.type==='busy'}))note='פנוי '+freeMin(k)+' דק׳';else note='';
+  h+='<div class="col" data-date="'+k+'" style="min-width:0;'+(off?'opacity:.6':'')+'"><button class="dayh" data-act="toggleOff" data-date="'+k+'" title="לחיצה: יום קליל, בלי בישול כבד" style="'+(k===today?'background:var(--green-t)':'')+'"><div style="font-family:Heebo,sans-serif;font-weight:700">'+DN[i]+'</div><div style="font-size:11px;color:var(--mute);line-height:1.3">'+d.getDate()+' · '+note+'</div></button>';
+  h+='<div class="body" style="position:relative;height:'+(g.ge-g.gs)*g.H+'px;border-inline-start:1px solid #F0EBE0;background-image:repeating-linear-gradient(to bottom,#F3EFE6 0,#F3EFE6 1px,transparent 1px,transparent '+g.H+'px)"><div style="position:absolute;inset-inline:0;top:'+(S.cfg.ws/60-g.gs)*g.H+'px;height:'+(S.cfg.we-S.cfg.ws)/60*g.H+'px;background:rgba(47,125,91,.06)"></div>';
+  var ev=S.plan.filter(function(e){return e.date===k}).sort(function(a,b){return a.start-b.start}),lanes=[],asg=[];
+  ev.forEach(function(e){var en=e.start+Math.max(e.prep+e.pass,30),l=0;while(lanes[l]!==undefined&&lanes[l]>e.start)l++;lanes[l]=en;asg.push(l)});
+  ev.forEach(function(e,ix){var l=asg[ix],n=1;ev.forEach(function(o,jx){if(o.start<e.start+Math.max(e.prep+e.pass,30)&&e.start<o.start+Math.max(o.prep+o.pass,30))n=Math.max(n,asg[jx]+1)});h+=blockHtml(e,g,l,Math.max(n,l+1))});
+  h+='</div></div>'});
+ c.innerHTML=h}
+function tfOk(r){var t=ui.tf;return !t||(t==='meal'?r.meal:t==='kept'?r.kept:r.prep<=t)}
+function viewLib(){
+ var q=ui.q.trim().toLowerCase(),list=S.recipes.filter(function(r){return(!q||r.title.toLowerCase().indexOf(q)>-1)&&tfOk(r)}).sort(function(a,b){return (b.kept?1:0)-(a.kept?1:0)||b.created-a.created});
+ var kept=S.recipes.filter(function(r){return r.kept}).length;
+ var h='<div class="row sp" style="margin-bottom:6px"><h1>המתכונים שלי</h1></div><p class="sub" style="margin-bottom:12px">♥ = נשמר לתמיד. מתכון בלי ♥ נמחק מעצמו אחרי השבוע שבו תכננת אותו.</p>'+
+ '<div class="row" style="margin-bottom:10px"><input class="inp" id="q" placeholder="חיפוש" value="'+esc(ui.q)+'" style="flex:1 1 200px"><span class="pill">'+S.recipes.length+' מתכונים · '+kept+' ♥</span></div>'+
+ '<div class="row" style="margin-bottom:12px"><span class="sub">כמה זמן יש לי?</span>'+[[0,'הכול'],[20,'עד 20 דק׳'],[45,'עד 45 דק׳'],['meal','ארוחות קבועות אצלנו (להוספה קלה)'],['kept','♥ שמורים']].map(function(t){var n=S.recipes.filter(function(r){var o=ui.tf;ui.tf=t[0];var k=tfOk(r);ui.tf=o;return k}).length;return '<button class="chip'+(ui.tf===t[0]?' on':'')+'" data-act="tf" data-v="'+t[0]+'">'+t[1]+' ('+n+')</button>'}).join('')+'</div>';
+ if(!S.recipes.length)return h+'<div class="card empty"><strong>עוד אין כאן מתכונים.</strong><p class="sub" style="margin:6px 0 12px">מעתיקים טקסט של מתכון (מאינסטגרם, מאתר, מהודעה) ומדביקים.</p><button class="btn accent" data-act="addRecipe">+ הוספת מתכון</button></div>';
+ if(!list.length)return h+'<div class="empty">אין מתכון שמתאים לסינון הזה.</div>';
+ return h+'<div class="card list">'+list.map(function(r){return '<div class="item"><button class="heart" data-act="toggleKeep" data-id="'+r.id+'" aria-label="'+(r.kept?'להסיר מהשמורים':'לשמור לתמיד')+'">'+(r.kept?'♥':'♡')+'</button><button data-act="openRecipe" data-id="'+r.id+'" style="flex:1;min-width:0;text-align:start;border:0;background:none;padding:0"><strong>'+esc(r.title)+'</strong><div class="sub">הכנה '+r.prep+' דק׳'+(r.pass?' · תנור '+r.pass+' דק׳':'')+' · '+r.servings+' מנות</div></button><button class="btn sm primary" data-act="planRecipe" data-id="'+r.id+'">+ ליומן</button></div>'}).join('')+'</div>'}
+function ck(on,act,attrs){return '<button class="ck'+(on?' on':'')+'" data-act="'+act+'" '+attrs+' aria-pressed="'+(!!on)+'" aria-label="סימון">'+(on?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>':'')+'</button>'}
+var CATS=[/ירק|עגבני|מלפפ|בצל|פלפל אדום|פלפל\b|פלפלים|גזר|חסה|תפוח|בננה|לימון|שום|פירות|בטטה|קישוא|חציל|ברוקולי|כרובית|אבוקדו|פטרוזיליה|כוסברה|נענע|תפוז|ענבים|תות|אפרסק|אגס|מלון|אבטיח/,/עוף|בשר|טונה|דג|נקניק|שניצל|קציצ|סלמון|הודו/,/חלב|גבינ|קוטג|יוגורט|שמנת|חמאה|מעדן|ביצ|לבן\b|מוצרלה|פטה|שוקו/];
+function catOf(t,prod){if(CATS[2].test(t))return 3;if(prod)return 0;if(CATS[1].test(t))return 2;if(CATS[0].test(t))return 0;return 1}
+function shopItems(){var ws=iso(wstart(ui.week)),L=[];
+ derive(ui.week).forEach(function(o){var k='d|'+ws+'|'+o.key;L.push({kind:'d',k:k,text:(S.edits&&S.edits[k])||o.text,orig:o.text,edited:!!(S.edits&&S.edits[k]),sub:o.from.join(', '),on:!!S.checks[k],cat:catOf(o.text,!!o.prod)})});
+ S.usual.forEach(function(u){var k='u|'+ws+'|'+u.id;L.push({kind:'u',k:k,id:u.id,text:u.text,sub:'קבוע',on:!!S.checks[k],cat:catOf(u.text)})});
+ S.manual.filter(function(m){return m.week===ws}).forEach(function(m){L.push({kind:'m',id:m.id,text:m.text,sub:'',on:!!m.done,cat:catOf(m.text)})});
+ return L.sort(function(a,b){return (a.on-b.on)||(a.cat-b.cat)||(a.text<b.text?-1:1)})}
+function viewShop(){
+ var L=shopItems(),h='<div class="row sp" style="margin-bottom:6px"><h1>קניות</h1><button class="btn sm" data-act="copyList">העתקת הרשימה</button></div><p class="sub" style="margin-bottom:12px">רשימה אחת של הכול. מה שמהמתכונים מתעדכן לבד כשמשנים את התכנון.</p><div style="margin-bottom:12px">'+weekNav()+'</div>';
+ h+='<div class="row" style="margin-bottom:12px;flex-wrap:nowrap"><input class="inp" id="addm" placeholder="הוסיפו פריט, למשל: נייר אפייה"><button class="btn primary" data-act="addManual">הוספה</button></div><label class="row" style="gap:8px;margin:-4px 0 12px"><input type="checkbox" id="addfix" style="width:22px;height:22px;accent-color:var(--green)"><span class="sub">קבוע, יופיע בכל שבוע</span></label>';
+ if(!L.length)return h+'<div class="card empty"><strong>הרשימה ריקה.</strong><p class="sub" style="margin:6px 0 0">כשיהיו מתכונים בשבוע, המצרכים יופיעו כאן לבד.</p></div>';
+ return h+'<p class="sub" style="margin:0 0 8px">אפשר ללחוץ על פריט כדי לשנות כמות או להוסיף הערה.</p><div class="card list">'+L.map(function(o){var btn=o.kind==='d'?ck(o.on,'chk','data-k="'+esc(o.k)+'"'):o.kind==='u'?ck(o.on,'chk','data-k="'+o.k+'"'):ck(o.on,'togM','data-id="'+o.id+'"');
+  return '<div class="item'+(o.on?' done':'')+'">'+btn+'<button class="t" data-act="editItem" data-kind="'+o.kind+'" data-k="'+esc(o.k||'')+'" data-id="'+(o.id||'')+'" style="flex:1;text-align:start;border:0;background:none;padding:0;font:inherit;color:inherit;cursor:pointer">'+esc(o.text)+'</button>'+(o.sub?'<span class="sub" style="font-size:12px">'+esc(o.sub)+'</span>':'')+(o.kind==='u'?'<button class="btn sm ghost" data-act="delUsual" data-id="'+o.id+'" aria-label="הסרה">×</button>':o.kind==='m'?'<button class="btn sm ghost" data-act="delManual" data-id="'+o.id+'" aria-label="הסרה">×</button>':'')+'</div>'}).join('')+'</div>'}
+function render(){
+ [].forEach.call(document.querySelectorAll('.tabs button[data-v]'),function(b){b.className=b.dataset.v===ui.tab?'on':''});
+ var v=$('view');
+ v.innerHTML=ui.tab==='plan'?viewPlan():ui.tab==='lib'?viewLib():viewShop();
+ if(ui.tab==='plan')drawCal();
+ if(ui.nostore&&!ui.warned){ui.warned=1;toast('הדפדפן הזה לא מאפשר שמירה, אז הנתונים יימחקו כשסוגרים')}}
+
+/* ---------- sheets ---------- */
+function openSheet(h){$('sheet').innerHTML=h;$('ov').className='ov show';var f=$('sheet').querySelector('input,textarea,button');}
+function closeSheet(){$('ov').className='ov';$('sheet').innerHTML=''}
+var SAMPLES=['פסטה שום ועגבניות\nזמן הכנה: 20 דקות\nמנות: 4\n\nמצרכים:\n400 גרם פסטה\n4 שיני שום\n5 עגבניות בשלות\n3 כפות שמן זית\nקצת בזיליקום טרי\nמלח ופלפל\n\nאופן ההכנה:\nמבשלים את הפסטה לפי ההוראות.\nמטגנים שום בשמן זית ומוסיפים עגבניות קצוצות.\nמערבבים עם הפסטה ומגישים.','עוגת שוקולד\nמנות: 8\nזמן הכנה: 10 דקות\nזמן אפייה: 50 דקות\n\nמרכיבים:\n200 גרם שוקולד מריר\n3 ביצים\n1 כוס סוכר\n1/2 כוס שמן\n1.5 כוסות קמח\n1 כפית אבקת אפייה\n\nהוראות הכנה:\nממיסים את השוקולד ומערבבים עם שאר החומרים.\nשופכים לתבנית ואופים ב-170 מעלות כ-50 דקות.'];
+function sheetPaste(){openSheet('<div class="row sp"><h2>הוספת מתכון</h2><button class="btn ghost sm" data-act="close">סגירה</button></div>'+
+ '<p class="sub" style="margin:4px 0 10px">1. מעתיקים את הטקסט של המתכון. 2. לוחצים "הדבק מהלוח".</p>'+
+ '<button class="btn accent" data-act="paste" style="width:100%;min-height:56px;font-size:18px">הדבק מהלוח</button>'+
+ '<label class="f"><span>או מדביקים כאן ידנית</span><textarea class="inp" id="raw" rows="7" placeholder="הדביקו כאן את הטקסט של המתכון"></textarea></label>'+
+ '<div class="row sp"><span class="sub">רוצים לנסות? <button class="btn ghost sm" data-act="sample" data-i="0">דוגמה 1</button><button class="btn ghost sm" data-act="sample" data-i="1">דוגמה 2 (עם תנור)</button></span><button class="btn primary" data-act="parse">המשך</button></div>')}
+function sheetForm(d,editing){ui.draft=d;
+ var unp=d.ingText.split('\n').filter(function(l){return l.trim()&&parseIng(l).qty==null}).length;
+ openSheet('<div class="row sp"><h2>'+(editing?'עריכת מתכון':'בדקו שהכול נקרא נכון')+'</h2><button class="btn ghost sm" data-act="close">סגירה</button></div>'+
+ '<label class="f"><span>שם</span><input class="inp" id="f-t" value="'+esc(d.title)+'"></label>'+
+ '<div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>מנות</span><input class="inp" id="f-s" type="number" min="1" max="50" value="'+d.servings+'"></label><label class="f" style="flex:1"><span>הכנה, אני עובדת (דק׳)</span><input class="inp" id="f-p" type="number" min="0" max="600" value="'+d.prep+'"></label><label class="f" style="flex:1"><span>תנור או סיר לבד (דק׳)</span><input class="inp" id="f-q" type="number" min="0" max="600" value="'+d.pass+'"></label></div>'+
+ (d.est?'<p class="sub" style="margin:-4px 0 6px">הזמנים חושבו אוטומטית מהטקסט, אפשר לתקן.</p>':'')+'<label class="f"><span>מצרכים לכל <b class="nsv">'+d.servings+'</b> המנות, שורה לכל מצרך'+(unp?' ('+unp+' שורות בלי כמות ייכנסו כמו שהן)':'')+'</span><textarea class="inp" id="f-i" rows="7">'+esc(d.ingText)+'</textarea></label>'+
+ '<label class="f"><span>אופן ההכנה</span><textarea class="inp" id="f-st" rows="5">'+esc(d.stepText)+'</textarea></label>'+
+ '<label class="row" style="gap:8px;margin:6px 0"><input type="checkbox" id="f-m" style="width:22px;height:22px;accent-color:var(--green)"'+(d.meal?' checked':'')+'><span>מה אוכלים קבוע אצלנו (ארוחה שחוזרת, בלי שלבים)</span></label>'+
+ (editing?'<div class="row"><button class="btn primary" data-act="saveEdit">שמירה</button></div>':
+ '<div class="row" style="margin-top:8px"><label class="row" style="gap:8px"><input type="checkbox" id="f-k" style="width:22px;height:22px;accent-color:var(--green)"'+(d.kept?' checked':'')+'><span>♥ שמור לתמיד</span></label></div><div class="row" style="margin-top:8px"><button class="btn primary" data-act="saveAdd" style="flex:1 1 200px;min-height:52px">הוסף לשבוע</button><button class="btn" data-act="saveOnly" style="flex:1 1 160px;min-height:52px">רק לשמור</button></div>'))}
+function readForm(){var d=ui.draft;d.title=$('f-t').value.trim()||'מתכון בלי שם';d.servings=Math.max(1,+$('f-s').value||4);d.prep=Math.max(0,+$('f-p').value||0);d.pass=Math.max(0,+$('f-q').value||0);d.ingText=$('f-i').value;d.stepText=$('f-st').value;d.meal=$('f-m').checked;if($('f-k'))d.kept=$('f-k').checked;return d}
+function toRecipe(d,id,created,kept){return{id:id||uid(),title:d.title,servings:d.servings,prep:d.prep,pass:d.pass,ings:d.ingText.split('\n').filter(function(l){return l.trim()}).map(parseIng),steps:d.stepText.split('\n').filter(function(l){return l.trim()}),kept:!!kept,meal:!!d.meal,created:created||Date.now()}}
+function sheetDay(rid,mid,keep){var m=mid?S.musts.filter(function(x){return x.id===mid})[0]:null,r=rid?rec(rid):{title:m.text},dates=weekDates(ui.week),today=iso(new Date());ui.pending=keep&&ui.pending?ui.pending:{rid:rid,mid:mid,sel:{}};var sel=ui.pending.sel;
+ openSheet('<div class="row sp"><h2>מתי מתאים?</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><p class="sub" style="margin:4px 0 10px">'+esc(r.title)+' · '+weekLabel(ui.week)+'. אפשר להזיז אחר כך.</p><label class="f" style="display:flex;align-items:center;gap:10px"><span style="margin:0;white-space:nowrap">באיזו שעה?</span><input class="inp" id="pt" type="time" step="900" value="'+hm(r.at!=null?r.at:S.cfg.ws)+'" style="max-width:140px"></label><p class="sub" style="margin:0 0 6px">מסמנים יום או כמה ימים, ואז שמירה.</p><div class="daypick">'+dates.map(function(d,i){var k=iso(d);return '<button class="btn'+(sel[k]?' primary':'')+'" data-act="pickDay" data-date="'+k+'" aria-pressed="'+(!!sel[k])+'" style="'+(S.off[k]&&!sel[k]?'opacity:.55':'')+'">'+DN[i]+'<br><span class="sub">'+d.getDate()+(S.off[k]?' · קליל':'')+'</span></button>'}).join('')+'</div><div class="row" style="margin-top:10px"><button class="btn sm" data-act="pickMany" data-n="5">סימון ראשון–חמישי</button><button class="btn sm" data-act="pickMany" data-n="7">סימון כל השבוע</button><button class="btn sm" data-act="pickOnCal">בחירה ישירות ביומן</button></div><button class="btn primary" data-act="saveDays" style="width:100%;margin-top:12px;min-height:52px">שמירה</button><div class="row sp" style="margin-top:12px"><button class="btn ghost" data-act="weekNextSheet">שבוע הבא ›</button><button class="btn ghost" data-act="close">אולי אחר כך</button>'+(rid?'<button class="btn ghost" data-act="editRecipe" data-id="'+rid+'">עריכת המתכון</button>':'')+'</div>')}
+function ptime(){var e=$('pt');return e&&e.value?Math.max(0,phm(e.value)):null}
+function placeStart(date,dur){var ws=S.cfg.ws,we=S.cfg.we,end=ws;S.plan.forEach(function(e){if(e.date===date&&e.start+e.prep+e.pass>end&&e.start<we)end=Math.min(we,e.start+e.prep+e.pass)});return Math.min(end,Math.max(ws,we-dur))}
+function addPlan(rid,date,mid,at){var r=rid?rec(rid):null,m=mid?S.musts.filter(function(x){return x.id===mid})[0]:null,prep=r?r.prep:30,pass=r?r.pass:0,st=at!=null?at:(r&&r.at!=null?r.at:Math.round(placeStart(date,prep+pass)/15)*15);S.plan.push({id:uid(),type:'cook',recipeId:rid||null,mustId:mid||null,title:m?m.text:r.title,date:date,start:st,prep:prep,pass:pass});save()}
+function sheetMust(id){var m=id?S.musts.filter(function(x){return x.id===id})[0]:null;ui.mustId=id||null;
+ openSheet('<div class="row sp"><h2>'+(m?'חשוב שיהיה':'מוסיפים משהו שחשוב שיהיה')+'</h2><button class="btn ghost sm" data-act="close">סגירה</button></div>'+
+ '<label class="f"><span>מה?</span><input class="inp" id="m-t" placeholder="למשל: חלה לשבת" value="'+esc(m?m.text:'')+'"></label>'+
+ '<div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>כל כמה זמן?</span><select class="inp" id="m-f"><option value="weekly"'+(!m||m.freq==='weekly'?' selected':'')+'>כל שבוע</option><option value="once"'+(m&&m.freq==='once'?' selected':'')+'>רק השבוע הזה</option></select></label>'+
+ '<label class="f" style="flex:1"><span>מתכון (לא חובה)</span><select class="inp" id="m-r"><option value="">בלי מתכון</option>'+S.recipes.map(function(r){return '<option value="'+r.id+'"'+(m&&m.recipeId===r.id?' selected':'')+'>'+esc(r.title)+'</option>'}).join('')+'</select></label></div>'+
+ '<p class="sub">עם מתכון, המצרכים נכנסים לרשימת הקניות כשמשבצים אותו ביומן.</p>'+
+ '<div class="row" style="margin-top:10px"><button class="btn primary" data-act="saveMust">שמירה</button>'+(m?'<button class="btn" data-act="planMust" data-id="'+m.id+'">שיבוץ ביומן</button><button class="btn danger" data-act="delMust" data-id="'+m.id+'">הסרה</button>':'')+'</div>')}
+function sheetEntry(id){var e=S.plan.filter(function(x){return x.id===id})[0];if(!e)return;var busy=e.type==='busy';
+ openSheet('<div class="row sp"><h2>'+(busy?'אירוע':esc(e.title))+'</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><input type="hidden" id="e-id" value="'+e.id+'">'+
+ (busy?'<label class="f"><span>שם</span><input class="inp" id="e-t" value="'+esc(e.title)+'"></label>':'')+
+ '<div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>יום</span><input class="inp" id="e-d" type="date" value="'+e.date+'"></label><label class="f" style="flex:1"><span>שעה</span><input class="inp" id="e-s" type="time" step="900" value="'+hm(e.start)+'"></label></div>'+
+ '<div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>'+(busy?'משך (דק׳)':'הכנה, אני עובדת (דק׳)')+'</span><input class="inp" id="e-p" type="number" min="5" max="600" value="'+e.prep+'"></label>'+(busy?'':'<label class="f" style="flex:1"><span>תנור או סיר לבד (דק׳)</span><input class="inp" id="e-q" type="number" min="0" max="600" value="'+e.pass+'"></label>')+'</div>'+
+ (busy?'':'<div style="margin-top:8px"><div class="sub" style="margin-bottom:4px">להוסיף גם בימים אחרים (לא חובה):</div><div class="row" style="gap:6px">'+weekDates(ui.week).map(function(d,i){var k=iso(d);return k===e.date?'':'<label class="chip row" style="gap:6px"><input type="checkbox" class="rep" value="'+k+'">'+DN[i]+'</label>'}).join('')+'</div><button class="btn sm" data-act="repeatEntry" style="margin-top:8px">הוספה לימים שסימנתי</button></div>')+
+ '<div class="row" style="margin-top:8px"><button class="btn primary" data-act="saveEntry">שמירה</button>'+(busy||!rec(e.recipeId)?'':'<button class="btn" data-act="editRecipe" data-id="'+e.recipeId+'">עריכת המתכון</button><button class="btn" data-act="openRecipe" data-id="'+e.recipeId+'">פתיחת המתכון</button>')+'<button class="btn danger" data-act="delEntry" data-id="'+e.id+'">הסרה מהשבוע</button></div>')}
+function sheetBusy(){var d=weekDates(ui.week)[0];openSheet('<div class="row sp"><h2>אירוע חדש</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><p class="sub" style="margin:4px 0">למשל עבודה, חוג, מקלחות. כדי שהיומן יראה מתי באמת יש זמן.</p><label class="f"><span>שם</span><input class="inp" id="b-t" placeholder="עבודה"></label><div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>יום</span><input class="inp" id="b-d" type="date" value="'+iso(new Date()>=d&&ui.week===0?new Date():d)+'"></label><label class="f" style="flex:1"><span>שעה</span><input class="inp" id="b-s" type="time" step="900" value="'+hm(S.cfg.ws)+'"></label><label class="f" style="flex:1"><span>משך (דק׳)</span><input class="inp" id="b-p" type="number" min="5" value="60"></label></div><button class="btn primary" data-act="saveBusy" style="margin-top:8px">הוספה</button>')}
+function sheetRecipe(id){var r=rec(id);if(!r)return;
+ openSheet('<div class="row sp"><h2>'+esc(r.title)+'</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><p class="sub">הכנה '+r.prep+' דק׳'+(r.pass?' · תנור '+r.pass+' דק׳':'')+' · '+r.servings+' מנות</p>'+
+ '<h3 style="margin:12px 0 4px;font-size:16px">מצרכים</h3><ul style="margin:0;padding-inline-start:20px">'+r.ings.map(function(g){return '<li>'+esc(g.raw)+'</li>'}).join('')+'</ul>'+
+ '<h3 style="margin:12px 0 4px;font-size:16px">אופן ההכנה</h3><ol style="margin:0;padding-inline-start:20px">'+r.steps.map(function(s){return '<li>'+esc(s)+'</li>'}).join('')+'</ol>'+
+ '<div class="row" style="margin-top:14px"><button class="btn primary" data-act="planRecipe" data-id="'+r.id+'">הוסף לשבוע</button><button class="btn" data-act="editRecipe" data-id="'+r.id+'">עריכה</button><button class="btn" data-act="dupRecipe" data-id="'+r.id+'">שכפול</button><button class="btn" data-act="toggleKeep" data-id="'+r.id+'" data-stay="1">'+(r.kept?'♥ שמור':'♡ שמור לתמיד')+'</button><button class="btn danger" data-act="delRecipe" data-id="'+r.id+'">מחיקה</button></div>')}
+function sheetSettings(){openSheet('<div class="row sp"><h2>פרופיל</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><p class="sub" style="margin:4px 0">שעות הבישול הרגילות. היומן מציג כמה זמן פנוי יש בטווח הזה.</p><div class="row" style="flex-wrap:nowrap"><label class="f" style="flex:1"><span>מ־</span><input class="inp" id="c-s" type="time" value="'+hm(S.cfg.ws)+'"></label><label class="f" style="flex:1"><span>עד</span><input class="inp" id="c-e" type="time" value="'+hm(S.cfg.we)+'"></label></div><p class="sub">המתכונים נשמרים בדפדפן הזה, על המכשיר הזה.</p><div class="row" style="margin-top:10px"><button class="btn primary" data-act="saveCfg">שמירה</button><button class="btn danger" data-act="reset" id="reset">מחיקת כל הנתונים</button></div>')}
+
+/* ---------- actions ---------- */
+var A={
+ addMeal:function(){sheetForm({est:false,title:'',servings:5,prep:5,pass:0,ingText:'',stepText:'',kept:true,meal:true},false)},
+ editItem:function(t){var kd=t.dataset.kind,cur='',orig='';
+  if(kd==='d'){var it=shopItems().filter(function(x){return x.k===t.dataset.k})[0];if(!it)return;cur=it.text;orig=it.orig}
+  else if(kd==='u'){var u=S.usual.filter(function(x){return x.id===t.dataset.id})[0];if(!u)return;cur=u.text}
+  else{var m=S.manual.filter(function(x){return x.id===t.dataset.id})[0];if(!m)return;cur=m.text}
+  ui.editing={kind:kd,k:t.dataset.k,id:t.dataset.id,orig:orig};
+  openSheet('<div class="row sp"><h2>עריכת פריט</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><label class="f"><span>מה לכתוב ברשימה (למשל: 3 עגבניות, או: עגבניות שרי)</span><input class="inp" id="ei-t" value="'+esc(cur)+'"></label><div class="row sp">'+(kd==='d'&&S.edits&&S.edits[t.dataset.k]?'<button class="btn ghost" data-act="itemReset">חזרה לטקסט המקורי</button>':'<span></span>')+'<button class="btn primary" data-act="itemSave">שמירה</button></div>');
+  setTimeout(function(){var i=$('ei-t');if(i){i.focus();i.select()}},50)},
+ itemSave:function(){var e=ui.editing,v=$('ei-t').value.trim();if(!e||!v)return;
+  if(e.kind==='d'){S.edits=S.edits||{};if(v===e.orig)delete S.edits[e.k];else S.edits[e.k]=v}
+  else if(e.kind==='u'){S.usual.forEach(function(x){if(x.id===e.id)x.text=v})}
+  else{S.manual.forEach(function(x){if(x.id===e.id)x.text=v})}
+  save();closeSheet();render()},
+ itemReset:function(){var e=ui.editing;if(e&&S.edits)delete S.edits[e.k];save();closeSheet();render()},
+ trayAll:function(){ui.tall=!ui.tall;if(!ui.tall)ui.tq='';render()},
+ trayFilter:function(t){ui.tkf=t.dataset.v;render()},
+ trayView:function(t){S.cfg.tv=t.dataset.v;save();render()},
+ tab:function(t){ui.tab=t.dataset.v;render();window.scrollTo(0,0)},
+ weekNext:function(){ui.week++;render()},weekPrev:function(){ui.week--;render()},weekToday:function(){ui.week=0;render()},
+ close:closeSheet,
+ addRecipe:sheetPaste,addBusy:sheetBusy,settings:sheetSettings,
+ sample:function(t){$('raw').value=SAMPLES[+t.dataset.i]},
+ paste:function(){var ta=$('raw');var fb=function(){ta.focus();toast('לחצו והדביקו בתיבה כאן')};
+  try{navigator.clipboard.readText().then(function(x){if(x&&x.trim()){ta.value=x;A.parse()}else fb()},fb)}catch(e){fb()}},
+ parse:function(){var raw=$('raw').value;if(!raw.trim()){toast('עוד אין טקסט. הדביקו מתכון או נסו דוגמה.');return}
+  var p=parseRecipe(raw);sheetForm({est:p.est,title:p.title||'',servings:p.servings,prep:p.prep,pass:p.pass,ingText:p.ings.join('\n'),stepText:p.steps.join('\n'),kept:false},false)},
+ saveAdd:function(){var d=readForm(),r=toRecipe(d,null,null,d.kept);S.recipes.push(r);save();sheetDay(r.id)},
+ saveOnly:function(){var d=readForm(),r=toRecipe(d,null,null,d.kept);S.recipes.push(r);save();closeSheet();toast(d.kept?'נשמר ♥':'נשמר בספרייה, יימחק מעצמו בעוד שבוע אם לא תתכננו');render()},
+ planRecipe:function(t){sheetDay(t.dataset.id)},
+ weekNextSheet:function(){ui.pending.time=ptime();ui.week++;sheetDay(ui.pending.rid,ui.pending.mid,true)},
+ goShop:function(){ui.tab='shop';render();window.scrollTo(0,0)},
+ addMust:function(){sheetMust(null)},openMust:function(t){sheetMust(t.dataset.id)},
+ saveMust:function(){var tx=$('m-t').value.trim();if(!tx){toast('כתבו מה חשוב שיהיה');return}var rid=$('m-r').value||null,f=$('m-f').value,ws=iso(wstart(ui.week));
+  if(ui.mustId){var m=S.musts.filter(function(x){return x.id===ui.mustId})[0];m.text=tx;m.recipeId=rid;if(f==='once'&&m.freq!=='once')m.week=ws;m.freq=f;S.plan.forEach(function(e){if(e.mustId===m.id){e.title=m.text}})}
+  else S.musts.push({id:uid(),text:tx,freq:f,week:ws,recipeId:rid});save();closeSheet();render();toast('נשמר. זה יחזור כל שבוע, ואפשר לסמן כשיש.')},
+ delMust:function(t){S.musts=S.musts.filter(function(m){return m.id!==t.dataset.id});S.plan=S.plan.filter(function(e){return e.mustId!==t.dataset.id});save();closeSheet();render()},
+ planMust:function(t){var m=S.musts.filter(function(x){return x.id===t.dataset.id})[0];sheetDay(m.recipeId&&rec(m.recipeId)?m.recipeId:null,m.id)},
+ pickDay:function(t){var k=t.dataset.date,sel=ui.pending.sel;if(sel[k])delete sel[k];else sel[k]=1;t.classList.toggle('primary');t.setAttribute('aria-pressed',!!sel[k]);if(t.style.opacity&&sel[k])t.style.opacity=''},
+ saveDays:function(){var ds=Object.keys(ui.pending.sel).sort();if(!ds.length){toast('סמנו יום אחד לפחות');return}var pt=ptime();ds.forEach(function(d){addPlan(ui.pending.rid,d,ui.pending.mid,pt)});closeSheet();ui.tab='plan';render();toast('נוסף ל־'+ds.length+(ds.length===1?' יום':' ימים')+'. אפשר לגרור להזיז.')},
+ pickOnCal:function(){ui.placing={rid:ui.pending.rid,mid:ui.pending.mid,time:ptime()};closeSheet();ui.tab='plan';render();window.scrollTo(0,0)},
+ cancelPlace:function(){ui.placing=null;render()},
+ pickMany:function(t){var n=+t.dataset.n,ds=weekDates(ui.week).slice(0,n).map(iso);ds.forEach(function(d){ui.pending.sel[d]=1});[].forEach.call(document.querySelectorAll('.daypick [data-date]'),function(b){if(ui.pending.sel[b.dataset.date]){b.classList.add('primary');b.style.opacity='';b.setAttribute('aria-pressed','true')}})},
+ openRecipe:function(t){sheetRecipe(t.dataset.id)},
+ editRecipe:function(t){var r=rec(t.dataset.id);ui.editId=r.id;sheetForm({title:r.title,servings:r.servings,prep:r.prep,pass:r.pass,ingText:r.ings.map(function(g){return g.raw}).join('\n'),stepText:r.steps.join('\n'),kept:r.kept,meal:r.meal},true)},
+ saveEdit:function(){var d=readForm(),old=rec(ui.editId),n=toRecipe(d,old.id,old.created,old.kept);S.recipes[S.recipes.indexOf(old)]=n;S.plan.forEach(function(e){if(e.recipeId===n.id){e.title=n.title;e.prep=n.prep;e.pass=n.pass}});save();closeSheet();render();toast('נשמר')},
+ dupRecipe:function(t){var o=rec(t.dataset.id),n=JSON.parse(JSON.stringify(o));n.id=uid();n.title=o.title+' (העתק)';n.kept=true;n.starter=false;n.created=Date.now();S.recipes.push(n);save();render();sheetRecipe(n.id);toast('הועתק. לוחצים "עריכה" כדי לשנות.')},
+ repeatEntry:function(){var e=S.plan.filter(function(x){return x.id===$('e-id').value})[0],ds=[].slice.call(document.querySelectorAll('.rep:checked')).map(function(c){return c.value});if(!ds.length){toast('סמנו ימים');return}
+  ds.forEach(function(d){var c=JSON.parse(JSON.stringify(e));c.id=uid();c.date=d;S.plan.push(c)});save();closeSheet();render();toast('נוסף ל־'+ds.length+' ימים')},
+ delRecipe:function(t){var id=t.dataset.id;if(t.dataset.sure!=='1'){t.dataset.sure='1';t.textContent='בטוחה? לחצו שוב';return}
+  S.recipes=S.recipes.filter(function(r){return r.id!==id});S.plan=S.plan.filter(function(e){return e.recipeId!==id});save();closeSheet();render();toast('נמחק')},
+ toggleKeep:function(t){var r=rec(t.dataset.id);r.kept=!r.kept;save();if(t.dataset.stay){sheetRecipe(r.id)}render();toast(r.kept?'נשמר לתמיד ♥':'לא נשמר לתמיד. יימחק בסוף השבוע שתכננת')},
+ saveEntry:function(){var e=S.plan.filter(function(x){return x.id===$('e-id').value})[0];e.date=$('e-d').value||e.date;e.start=Math.max(0,phm($('e-s').value));e.prep=Math.max(5,+$('e-p').value||e.prep);if($('e-q'))e.pass=Math.max(0,+$('e-q').value||0);if($('e-t'))e.title=$('e-t').value.trim()||'אירוע';save();closeSheet();render()},
+ delEntry:function(t){S.plan=S.plan.filter(function(e){return e.id!==t.dataset.id});save();closeSheet();render();toast('הוסר מהשבוע')},
+ saveBusy:function(){var d=$('b-d').value;if(!d){toast('בחרו יום');return}S.plan.push({id:uid(),type:'busy',title:$('b-t').value.trim()||'עסוקה',date:d,start:phm($('b-s').value),prep:Math.max(5,+$('b-p').value||60),pass:0});save();closeSheet();render()},
+ toggleOff:function(t){var k=t.dataset.date;if(S.off[k])delete S.off[k];else S.off[k]=1;save();drawCal()},
+ saveCfg:function(){var a=phm($('c-s').value),b=phm($('c-e').value);if(b<=a){toast('שעת הסיום צריכה להיות אחרי ההתחלה');return}S.cfg={ws:a,we:b};save();closeSheet();render()},
+ reset:function(t){if(t.dataset.sure!=='1'){t.dataset.sure='1';t.textContent='בטוחה? לחצו שוב';return}S={recipes:starters(),seedV:4,plan:[],usual:[],manual:[],musts:[],checks:{},off:{},cfg:{ws:1020,we:1260}};save();closeSheet();render();toast('הכול נמחק')},
+ tf:function(t){var v=t.dataset.v;ui.tf=isNaN(+v)?v:+v;render()},
+ chk:function(t){var k=t.dataset.k;if(S.checks[k])delete S.checks[k];else S.checks[k]=1;save();render()},
+ togM:function(t){S.manual.forEach(function(m){if(m.id===t.dataset.id)m.done=!m.done});save();render()},
+ addManual:function(){var v=$('addm').value.trim();if(!v)return;if($('addfix')&&$('addfix').checked)S.usual.push({id:uid(),text:v});else S.manual.push({id:uid(),text:v,week:iso(wstart(ui.week)),done:false});save();render();$('addm').focus()},
+ delManual:function(t){S.manual=S.manual.filter(function(m){return m.id!==t.dataset.id});save();render()},
+ addUsual:function(){var v=$('addu').value.trim();if(!v)return;S.usual.push({id:uid(),text:v});save();render();$('addu').focus()},
+ delUsual:function(t){S.usual=S.usual.filter(function(m){return m.id!==t.dataset.id});save();render()},
+ copyList:function(){var L=['רשימת קניות, '+weekLabel(ui.week)];shopItems().forEach(function(o){if(!o.on)L.push('- '+o.text)});
+  var txt=L.join('\n'),ok=function(){toast('הרשימה הועתקה')},no=function(){openSheet('<div class="row sp"><h2>העתקה</h2><button class="btn ghost sm" data-act="close">סגירה</button></div><textarea class="inp" rows="10" id="cp">'+esc(txt)+'</textarea>');$('cp').select()};
+  try{navigator.clipboard.writeText(txt).then(ok,no)}catch(e){no()}}
+};
+document.addEventListener('click',function(e){if(ui.placing){var body=e.target.closest&&e.target.closest('#cal .body'),btn=e.target.closest&&e.target.closest('[data-act]');
+  if(body&&!btn){var col=body.parentNode,g=grid(),r0=body.getBoundingClientRect(),mins=Math.round(((e.clientY-r0.top)/g.H*60+g.gs*60)/15)*15,pl=ui.placing,rr=pl.rid?rec(pl.rid):null,tot=rr?rr.prep+rr.pass:30;mins=Math.max(g.gs*60,Math.min(g.ge*60-tot,mins));addPlan(pl.rid,col.dataset.date,pl.mid,mins);ui.placing=null;render();toast('נוסף. אפשר לגרור להזיז.');return}}
+ var t=e.target.closest('[data-act]');if(t&&A[t.dataset.act]){A[t.dataset.act](t)}else if(e.target.id==='ov'){closeSheet()}});
+document.addEventListener('input',function(e){if(e.target.id==='tq'){ui.tq=e.target.value;var p2=e.target.selectionStart;render();var q2=$('tq');q2.focus();q2.setSelectionRange(p2,p2);return}if(e.target.id==='q'){ui.q=e.target.value;var p=e.target.selectionStart;render();var q=$('q');q.focus();q.setSelectionRange(p,p)}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();if(e.key==='Enter'){if(e.target.id==='addm')A.addManual();if(e.target.id==='addu')A.addUsual()}
+ if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('blk')){e.preventDefault();sheetEntry(e.target.dataset.id)}});
+
+/* ---------- drag ---------- */
+var IS_TOUCH=!!(window.matchMedia&&matchMedia('(pointer: coarse)').matches);
+var drag=null,td=null,lp={x:0,y:0},asTimer=null;
+function stopAS(){if(asTimer){clearInterval(asTimer);asTimer=null}}
+function startAS(fn){stopAS();asTimer=setInterval(function(){var d=0,h=0,vh=window.innerHeight;
+ if(lp.y<90)d=-14;else if(lp.y>vh-120)d=14;
+ var w=document.querySelector('.calwrap');if(w){var r=w.getBoundingClientRect();if(lp.y>r.top&&lp.y<r.bottom){if(lp.x<r.left+36)h=-10;else if(lp.x>r.right-36)h=10}}
+ if(d)window.scrollBy(0,d);if(h&&w)w.scrollLeft+=h;if(d||h)fn()},16)}
+function noScroll(e){if((td&&td.armed)||(drag&&drag.armed)){if(e.cancelable)e.preventDefault()}}
+function moveBlk(cx,cy){if(!drag)return;
+ var g=grid(),cols=[].slice.call(document.querySelectorAll('#cal .col')),hit=cols.filter(function(c){var r=c.getBoundingClientRect();return cx>=r.left&&cx<=r.right})[0];
+ if(hit)drag.e.date=hit.dataset.date;
+ var body=document.querySelector('#cal .col .body').getBoundingClientRect(),y=cy-drag.dy-body.top,mins=Math.round((y/g.H*60+g.gs*60)/15)*15,tot=drag.e.prep+drag.e.pass;
+ drag.e.start=Math.max(g.gs*60,Math.min(g.ge*60-tot,mins));
+ var id=drag.e.id;drawCal();var nb=document.querySelector('.blk[data-id="'+id+'"]');if(nb){try{nb.setPointerCapture(drag.pid)}catch(_){}nb.addEventListener('touchmove',noScroll,{passive:false});nb.style.opacity='.85';nb.style.zIndex=5}}
+function armBlk(){if(!drag||drag.armed)return;drag.armed=true;drag.moved=true;if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}moveBlk(lp.x,lp.y);startAS(function(){moveBlk(lp.x,lp.y)})}
+document.addEventListener('pointerdown',function(x){var b=x.target.closest&&x.target.closest('.blk');if(!b||!$('cal')||!$('cal').contains(b))return;
+ var e=S.plan.filter(function(q){return q.id===b.dataset.id})[0];if(!e)return;var r=b.getBoundingClientRect(),touch=x.pointerType==='touch';
+ lp={x:x.clientX,y:x.clientY};
+ drag={e:e,dy:x.clientY-r.top,x0:x.clientX,y0:x.clientY,moved:false,pid:x.pointerId,armed:!touch,timer:null};
+ if(touch){b.addEventListener('touchmove',noScroll,{passive:false});drag.timer=setTimeout(armBlk,350)}
+ else{try{b.setPointerCapture(x.pointerId)}catch(_){}x.preventDefault()}});
+document.addEventListener('pointermove',function(x){lp={x:x.clientX,y:x.clientY};
+ if(drag){if(!drag.armed){if(Math.abs(x.clientX-drag.x0)+Math.abs(x.clientY-drag.y0)>10){clearTimeout(drag.timer);drag=null}}
+  else{if(!drag.moved&&Math.abs(x.clientX-drag.x0)+Math.abs(x.clientY-drag.y0)<6)return;drag.moved=true;moveBlk(x.clientX,x.clientY);if(!asTimer)startAS(function(){moveBlk(lp.x,lp.y)})}}
+ if(td){if(!td.armed){if(Math.abs(x.clientX-td.x0)+Math.abs(x.clientY-td.y0)>10){clearTimeout(td.timer);td=null}}
+  else{if(!td.moved&&Math.abs(x.clientX-td.x0)+Math.abs(x.clientY-td.y0)<8)return;td.moved=true;moveTd(x.clientX,x.clientY);if(!asTimer)startAS(function(){moveTd(lp.x,lp.y)})}}});
+function colAt(x,y){var cs=document.querySelectorAll('#cal .col');for(var i=0;i<cs.length;i++){var r=cs[i].getBoundingClientRect();if(x>=r.left&&x<=r.right&&y>=r.top-20&&y<=r.bottom)return cs[i]}return null}
+function moveTd(cx,cy){if(!td)return;
+ if(!td.el){td.el=document.createElement('div');td.el.className='tchip dragghost';td.el.textContent=td.label;document.body.appendChild(td.el)}
+ td.el.style.left=(cx-30)+'px';td.el.style.top=(cy-20)+'px';
+ [].forEach.call(document.querySelectorAll('#cal .col'),function(c){c.classList.remove('hot')});var h=colAt(cx,cy);if(h)h.classList.add('hot')}
+function armTd(){if(!td||td.armed)return;td.armed=true;td.moved=true;if(navigator.vibrate)try{navigator.vibrate(15)}catch(_){}moveTd(lp.x,lp.y);startAS(function(){moveTd(lp.x,lp.y)})}
+document.addEventListener('pointerdown',function(x){var c=x.target.closest&&x.target.closest('.tchip');if(!c||c.classList.contains('dragghost'))return;var touch=x.pointerType==='touch';
+ lp={x:x.clientX,y:x.clientY};
+ td={rid:c.dataset.rid,x0:x.clientX,y0:x.clientY,moved:false,el:null,label:c.textContent,armed:!touch,timer:null};
+ if(touch){c.addEventListener('touchmove',noScroll,{passive:false});td.timer=setTimeout(armTd,350)}else x.preventDefault()});
+document.addEventListener('pointerup',function(x){stopAS();if(!td)return;var t=td;td=null;clearTimeout(t.timer);if(t.el)t.el.remove();
+ [].forEach.call(document.querySelectorAll('#cal .col'),function(c){c.classList.remove('hot')});
+ if(!t.moved){sheetDay(t.rid);return}
+ var h=colAt(x.clientX,x.clientY);if(!h)return;var r=rec(t.rid),g=grid(),body=h.querySelector('.body').getBoundingClientRect(),mins=Math.round(((x.clientY-body.top)/g.H*60+g.gs*60)/15)*15,tot=r.prep+r.pass;
+ mins=Math.max(g.gs*60,Math.min(g.ge*60-tot,mins));addPlan(t.rid,h.dataset.date,null,mins);render();toast('נוסף לשבוע. אפשר לגרור להזיז.')});
+document.addEventListener('pointercancel',function(){stopAS();if(td){clearTimeout(td.timer);if(td.el)td.el.remove();td=null}if(drag){clearTimeout(drag.timer);drag=null;drawCal()}});
+document.addEventListener('contextmenu',function(e){if(e.target.closest&&(e.target.closest('.tchip')||e.target.closest('.blk')))e.preventDefault()});
+function endDrag(){stopAS();if(!drag)return;var d=drag;drag=null;clearTimeout(d.timer);if(d.moved){save();drawCal()}else sheetEntry(d.e.id)}
+document.addEventListener('pointerup',endDrag);
+
+seed();load();migrate();expire();save();render();
+})();
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='f-s'){document.querySelectorAll('.nsv').forEach(function(n){n.textContent=ev.target.value})}});
+</script>
+
+</body></html>
